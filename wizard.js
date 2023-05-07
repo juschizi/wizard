@@ -797,10 +797,30 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
               this.main.find('.sw-btn-prev').addClass("disabled");
               break;
 
-            case 'last':
-              this.main.find('.sw-btn-next').addClass("disabled");
-              break;
-
+              case 'last':
+                this.main.find('.sw-btn-next')
+                  .removeClass("sw-btn-next")
+                  .addClass("sw-btn-submit")
+                  .text("Submit")
+                  .off('click') // remove any previous click event listeners
+                  .on('click', function() {
+                    var form_data = $('.wizard form').serialize();
+                    $.ajax({
+                      type: 'POST',
+                      url: 'submit.php',
+                      data: form_data,
+                      success: function(response) {
+                        console.log('Form submitted successfully');
+                        console.log(response);
+                      },
+                      error: function(xhr, status, error) {
+                        console.log('Error submitting form');
+                        console.log(xhr.responseText);
+                      }
+                    });
+                  });
+                break;
+                
             default:
               if (this._getNextShowable(idx) === false) {
                 this.main.find('.sw-btn-next').addClass("disabled");
@@ -1051,3 +1071,22 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
     }
   };
 });
+function submitForm() {
+  $('.wizard .finish').on('click', function() {
+    var form_data = $('.wizard form').serialize();
+
+    $.ajax({
+      type: 'POST',
+      url: 'submit.php',
+      data: form_data,
+      success: function(response) {
+        console.log('Form submitted successfully');
+        console.log(response);
+      },
+      error: function(xhr, status, error) {
+        console.log('Error submitting form');
+        console.log(xhr.responseText);
+      }
+    });
+  });
+}
